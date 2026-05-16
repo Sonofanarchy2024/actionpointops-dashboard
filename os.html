@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActionPointOPS · Business OS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--gold:#C9A84C;--dark:#0D0D0D;--dark2:#1A1A1A;--dark3:#252525;
+--text:#E8E4DC;--muted:#888780;--border:#2A2A2A;
+--green:#1D9E75;--red:#E24B4A;--amber:#EF9F27;
+}
+body{background:var(--dark);color:var(--text);font-family:'Outfit',sans-serif;font-weight:300;padding-bottom:60px}
+header{padding:28px 20px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text)}
+.logo span{color:var(--gold)}
+.badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);border:0.5px solid var(--gold);padding:3px 10px;border-radius:20px;letter-spacing:1px}
+.hero{padding:32px 20px 24px;border-bottom:0.5px solid var(--border)}
+.hero h1{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;line-height:1.2;margin-bottom:6px}
+.hero h1 em{color:var(--gold);font-style:italic}
+.hero p{font-size:13px;color:var(--muted);line-height:1.5}
+.cost-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
+.cost-cell{background:var(--dark);padding:16px 20px}
+.cost-cell .label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.5px;margin-bottom:6px}
+.cost-cell .val{font-size:20px;font-weight:500;color:var(--gold)}
+.cost-cell .sub{font-size:11px;color:var(--muted);margin-top:3px}
+section{border-bottom:0.5px solid var(--border)}
+.sec-header{padding:20px 20px 0;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sec-icon{width:28px;height:28px;border:0.5px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sec-title{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.card{margin:0 20px 12px;background:var(--dark2);border:0.5px solid var(--border);border-radius:10px;padding:14px}
+.card-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border)}
+.card-row:last-child{border-bottom:none;padding-bottom:0}
+.card-row:first-child{padding-top:0}
+.row-label{font-size:13px;color:var(--text)}
+.row-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.row-right{text-align:right;flex-shrink:0;margin-left:12px}
+.amount{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold)}
+.pill{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:10px;letter-spacing:0.3px}
+.pill-green{background:rgba(29,158,117,0.15);color:var(--green);border:0.5px solid rgba(29,158,117,0.3)}
+.pill-amber{background:rgba(239,159,39,0.15);color:var(--amber);border:0.5px solid rgba(239,159,39,0.3)}
+.pill-red{background:rgba(226,75,74,0.15);color:var(--red);border:0.5px solid rgba(226,75,74,0.3)}
+.pill-muted{background:var(--dark3);color:var(--muted);border:0.5px solid var(--border)}
+.tag{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.agent-card{margin:0 20px 10px;background:var(--dark2);border:0.5px solid var(--border);border-radius:10px;padding:14px;display:flex;align-items:flex-start;gap:12px}
+.agent-icon{width:36px;height:36px;border-radius:8px;background:rgba(201,168,76,0.1);border:0.5px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.agent-name{font-size:14px;font-weight:500;margin-bottom:3px}
+.agent-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.link-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 20px 16px}
+.link-btn{background:var(--dark2);border:0.5px solid var(--border);border-radius:10px;padding:12px;text-decoration:none;display:flex;align-items:center;gap:8px;transition:border-color 0.2s;cursor:pointer}
+.link-btn:hover{border-color:var(--gold)}
+.link-btn .lbl{font-size:12px;color:var(--text)}
+.link-btn .url{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.link-icon{font-size:16px;flex-shrink:0}
+.tax-card{margin:0 20px 12px;background:var(--dark2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+.tax-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border)}
+.tax-row:last-child{border-bottom:none}
+.tax-label{font-size:13px;color:var(--text)}
+.tax-date{font-family:'DM Mono',monospace;font-size:12px;color:var(--amber)}
+.warning-card{margin:0 20px 16px;background:rgba(239,159,39,0.08);border:0.5px solid rgba(239,159,39,0.25);border-radius:10px;padding:14px}
+.warning-card p{font-size:12px;color:var(--amber);line-height:1.6}
+.warning-card strong{font-weight:500}
+.sec-pad{padding-bottom:20px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Action<span>Point</span>OPS</div>
+  <div class="badge">BUSINESS OS</div>
+</header>
+
+<div class="hero">
+  <h1>Your business<br><em>command centre</em></h1>
+  <p>Everything you need to run ActionPointOPS in one place. Updated manually — your source of truth.</p>
+</div>
+
+<div class="cost-bar">
+  <div class="cost-cell">
+    <div class="label">Monthly spend</div>
+    <div class="val">~$145</div>
+    <div class="sub">CAD / month (approx)</div>
+  </div>
+  <div class="cost-cell">
+    <div class="label">Break even</div>
+    <div class="val">1 client</div>
+    <div class="sub">covers it all</div>
+  </div>
+  <div class="cost-cell">
+    <div class="label">Stripe</div>
+    <div class="val" style="font-size:14px;color:var(--amber)">Under review</div>
+    <div class="sub">set up soon</div>
+  </div>
+</div>
+
+<!-- TECH STACK -->
+<section class="sec-pad">
+  <div class="sec-header">
+    <div class="sec-icon">⚙️</div>
+    <div class="sec-title">Tech stack & subscriptions</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div><div class="row-label">Replit Core</div><div class="row-sub">Agents run here 24/7 · renews Jun 15</div></div>
+      <div class="row-right"><div class="amount">CA$32.90/mo</div><div class="pill pill-green" style="margin-top:4px">Active</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">Claude (Anthropic)</div><div class="row-sub">AI backbone · monthly billing</div></div>
+      <div class="row-right"><div class="amount">~$27/mo</div><div class="pill pill-green" style="margin-top:4px">Active</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">OpenAI API</div><div class="row-sub">Mindy + Analyst agent · usage based</div></div>
+      <div class="row-right"><div class="amount">~$5/mo</div><div class="pill pill-green" style="margin-top:4px">Active</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">Lovable</div><div class="row-sub">Frontend builder · monthly</div></div>
+      <div class="row-right"><div class="amount">$50/mo</div><div class="pill pill-amber" style="margin-top:4px">Review use</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">GoDaddy — actionpointops.com</div><div class="row-sub">Domain + protection + M365 email · renews Mar 24, 2027 · jumps to CA$196/yr</div></div>
+      <div class="row-right"><div class="amount">CA$63/yr</div><div class="pill pill-green" style="margin-top:4px">Active</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">GoDaddy — getclaimboost.com</div><div class="row-sub">Domain only · renews Apr 7, 2027 · build it or drop it</div></div>
+      <div class="row-right"><div class="amount">CA$21/yr</div><div class="pill pill-amber" style="margin-top:4px">Parked</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">Virtual address</div><div class="row-sub">Ontario business address</div></div>
+      <div class="row-right"><div class="amount">$20/mo</div><div class="pill pill-green" style="margin-top:4px">Active</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">Hunter.io</div><div class="row-sub">Free plan · 25 searches/mo</div></div>
+      <div class="row-right"><div class="amount">Free</div><div class="pill pill-green" style="margin-top:4px">Active</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">GitHub</div><div class="row-sub">Dashboard + intake form hosting</div></div>
+      <div class="row-right"><div class="amount">Free</div><div class="pill pill-green" style="margin-top:4px">Active</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">Stripe</div><div class="row-sub">Client payments · under review</div></div>
+      <div class="row-right"><div class="amount">TBD</div><div class="pill pill-amber" style="margin-top:4px">Pending</div></div>
+    </div>
+  </div>
+
+  <div class="warning-card">
+    <p>⚠️ <strong>API keys are NOT stored here.</strong> All passwords and API keys go in Bitwarden (set up tomorrow). This page tracks tools and costs only.</p>
+  </div>
+</section>
+
+<!-- FINANCIAL CALENDAR -->
+<section class="sec-pad">
+  <div class="sec-header">
+    <div class="sec-icon">📅</div>
+    <div class="sec-title">Financial calendar · Ontario</div>
+  </div>
+  <div class="tax-card">
+    <div class="tax-row">
+      <div><div class="row-label">HST filing (quarterly)</div><div class="row-sub">If registered for HST · CRA</div></div>
+      <div class="tax-date">Apr · Jul · Oct · Jan</div>
+    </div>
+    <div class="tax-row">
+      <div><div class="row-label">Personal income tax</div><div class="row-sub">T1 return · CRA deadline</div></div>
+      <div class="tax-date">Apr 30, 2027</div>
+    </div>
+    <div class="tax-row">
+      <div><div class="row-label">Self-employed tax deadline</div><div class="row-sub">Filing extended but payment due Apr 30</div></div>
+      <div class="tax-date">Jun 15, 2027</div>
+    </div>
+    <div class="tax-row">
+      <div><div class="row-label">Corporate tax (if incorporated)</div><div class="row-sub">T2 return · 6 months after year end</div></div>
+      <div class="tax-date">Check with accountant</div>
+    </div>
+    <div class="tax-row">
+      <div><div class="row-label">WSIB registration</div><div class="row-sub">Required if hiring employees in ON</div></div>
+      <div class="tax-date">Before first hire</div>
+    </div>
+    <div class="tax-row">
+      <div><div class="row-label">Replit renewal</div><div class="row-sub">Core plan · auto-renews</div></div>
+      <div class="tax-date">Jun 15, 2026</div>
+    </div>
+    <div class="tax-row">
+      <div><div class="row-label">GitHub token expiry</div><div class="row-sub">Regenerate before expiry</div></div>
+      <div class="tax-date">Jun 15, 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENT DIRECTORY -->
+<section class="sec-pad">
+  <div class="sec-header">
+    <div class="sec-icon">🤖</div>
+    <div class="sec-title">Agent directory</div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-icon">🧠</div>
+    <div><div class="agent-name">Supervisor</div><div class="agent-desc">Orchestrates all agents. Feeds the dashboard every 5 min. Reads uploaded CSVs. Manages the morning briefing. Lives in main.py.</div></div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-icon">🔍</div>
+    <div><div class="agent-name">Discovery</div><div class="agent-desc">Handles inbound leads from the website. Scores them and flags critical leads on the dashboard.</div></div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-icon">📣</div>
+    <div><div class="agent-name">Marketing</div><div class="agent-desc">Sends cold outreach via info@actionpointops.com. Reads TARGETS list. Logs all sends to supervisor_data.json. Follow-up at day 5.</div></div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-icon">📊</div>
+    <div><div class="agent-name">Analyst</div><div class="agent-desc">Builds Pinpoint Diagnostic Reports after discovery calls. Triggered by paste from intake form. Output flagged on dashboard for review.</div></div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-icon">📋</div>
+    <div><div class="agent-name">SOP Builder</div><div class="agent-desc">Generates SOP packages and proposals. Triggered after Analyst report is approved. Saves docs to deliverables folder.</div></div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-icon">🌹</div>
+    <div><div class="agent-name">Rose</div><div class="agent-desc">Monitors info@actionpointops.com every 15 min. Classifies replies: Interested / Not Now / Urgent / Spam. Drafts responses. Needs Outlook OAuth2 setup.</div></div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-icon">✨</div>
+    <div><div class="agent-name">Mindy</div><div class="agent-desc">Content engine. Runs every Monday 8am. Generates LinkedIn posts, TikTok scripts, outreach variations. Saves to content_output.json.</div></div>
+  </div>
+</section>
+
+<!-- SERVICES & PRICING -->
+<section class="sec-pad">
+  <div class="sec-header">
+    <div class="sec-icon">💰</div>
+    <div class="sec-title">Services & pricing</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div><div class="row-label">Pinpoint Diagnostic</div><div class="row-sub">48hr report · identify the exact break point</div></div>
+      <div class="row-right"><div class="amount">$500–$1,500</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">Pinpoint Fix</div><div class="row-sub">Targeted fix for one operational problem</div></div>
+      <div class="row-right"><div class="amount">$2,500–$5,000</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">System Build</div><div class="row-sub">Full operational overhaul · SOPs + systems</div></div>
+      <div class="row-right"><div class="amount">$5,000–$10,000</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">Fractional COO</div><div class="row-sub">Ongoing monthly · your ops partner</div></div>
+      <div class="row-right"><div class="amount">$3,000–$5,000/mo</div></div>
+    </div>
+    <div class="card-row">
+      <div><div class="row-label">GetClaimBoost</div><div class="row-sub">Demand letter generator · Gumroad · not yet built</div></div>
+      <div class="row-right"><div class="amount">TBD</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK LINKS -->
+<section class="sec-pad">
+  <div class="sec-header">
+    <div class="sec-icon">🔗</div>
+    <div class="sec-title">Quick links</div>
+  </div>
+  <div class="link-grid">
+    <a class="link-btn" href="https://sonofanarchy2024.github.io/actionpointops-dashboard/" target="_blank">
+      <div class="link-icon">📊</div>
+      <div><div class="lbl">CEO Dashboard</div><div class="url">github.io/…/dashboard</div></div>
+    </a>
+    <a class="link-btn" href="https://sonofanarchy2024.github.io/actionpointops-dashboard/intake.html" target="_blank">
+      <div class="link-icon">📝</div>
+      <div><div class="lbl">Intake Form</div><div class="url">github.io/…/intake</div></div>
+    </a>
+    <a class="link-btn" href="https://replit.com" target="_blank">
+      <div class="link-icon">⚙️</div>
+      <div><div class="lbl">Replit</div><div class="url">replit.com</div></div>
+    </a>
+    <a class="link-btn" href="https://gist.github.com/Sonofanarchy2024/29415de74f9e62e6400a467f0bec26e8" target="_blank">
+      <div class="link-icon">🔄</div>
+      <div><div class="lbl">GitHub Gist</div><div class="url">Data bridge</div></div>
+    </a>
+    <a class="link-btn" href="https://hunter.io" target="_blank">
+      <div class="link-icon">🎯</div>
+      <div><div class="lbl">Hunter.io</div><div class="url">Lead emails</div></div>
+    </a>
+    <a class="link-btn" href="https://webmail.godaddy.com" target="_blank">
+      <div class="link-icon">📧</div>
+      <div><div class="lbl">GoDaddy Mail</div><div class="url">info@actionpointops.com</div></div>
+    </a>
+    <a class="link-btn" href="https://dashboard.stripe.com" target="_blank">
+      <div class="link-icon">💳</div>
+      <div><div class="lbl">Stripe</div><div class="url">Payments · pending</div></div>
+    </a>
+    <a class="link-btn" href="https://github.com/Sonofanarchy2024/actionpointops-dashboard" target="_blank">
+      <div class="link-icon">💾</div>
+      <div><div class="lbl">GitHub Repo</div><div class="url">Dashboard files</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- BUSINESS INFO -->
+<section class="sec-pad">
+  <div class="sec-header">
+    <div class="sec-icon">🏢</div>
+    <div class="sec-title">Business info</div>
+  </div>
+  <div class="card">
+    <div class="card-row">
+      <div class="row-label">Business name</div>
+      <div class="tag">ActionPointOPS</div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">Owner</div>
+      <div class="tag">Chantal Dozil</div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">Role</div>
+      <div class="tag">Fractional COO</div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">Province</div>
+      <div class="tag">Ontario, Canada</div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">Email</div>
+      <div class="tag">info@actionpointops.com</div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">Dashboard</div>
+      <div class="tag">sonofanarchy2024.github.io</div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">Launch date</div>
+      <div class="tag" style="color:var(--gold)">Tuesday May 19, 2026</div>
+    </div>
+    <div class="card-row">
+      <div class="row-label">Target market</div>
+      <div class="tag">Ontario SMBs · 11–200 employees</div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
