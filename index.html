@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ActionPointOPS — CEO Command Centre</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a84c;--gold-bright:#f0c040;--gold-dim:rgba(201,168,76,0.15);
+  --bg:#080808;--sidebar-bg:#0c0c0c;--card-bg:#111111;
+  --card-border:rgba(201,168,76,0.12);--text:#f0ece0;--text-dim:#7a7060;
+  --text-mid:#a09880;--green:#2ecc71;--amber:#f0a030;--red:#e05050;--blue:#4a9eff;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow:hidden}
+.wrapper{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:200px;min-width:200px;background:var(--sidebar-bg);border-right:1px solid rgba(201,168,76,0.08);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(201,168,76,0.08)}
+.logo-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--gold),#8a6010);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);margin-bottom:8px}
+.logo-name{font-size:0.82rem;font-weight:800;color:var(--gold)}
+.logo-sub{font-size:0.58rem;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase;margin-top:2px}
+.sidebar-nav{padding:16px 0;flex:1}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 20px;font-size:0.78rem;font-weight:500;color:var(--text-dim);cursor:pointer;transition:all 0.15s;position:relative}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.nav-item.active{color:var(--gold);background:var(--gold-dim);border-right:2px solid var(--gold)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--gold);color:#000;font-size:0.6rem;font-weight:800;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.sidebar-bottom{padding:16px;border-top:1px solid rgba(201,168,76,0.08)}
+.pipeline-widget{background:rgba(201,168,76,0.06);border:1px solid var(--card-border);border-radius:10px;padding:14px;margin-bottom:10px}
+.w-label{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.w-value{font-size:1.5rem;font-weight:800;color:var(--gold);line-height:1}
+.w-sub{font-size:0.65rem;color:var(--text-dim);margin-top:3px}
+.outreach-widget{margin-bottom:10px}
+.outreach-widget .w-label{margin-bottom:6px}
+.ow-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.ow-row:last-child{border-bottom:none}
+.ow-row .ok{font-size:0.7rem;color:var(--text-mid)}
+.ow-row .ov{font-size:0.7rem;font-weight:700;color:var(--text)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid rgba(201,168,76,0.08);flex-shrink:0;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,0.04) 0%,transparent 70%)}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar-title{font-size:1.1rem;font-weight:800;color:#fff}
+.topbar-sub{font-size:0.7rem;color:var(--text-dim)}
+.status-pill{display:flex;align-items:center;gap:6px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:5px 12px;font-size:0.68rem;font-weight:600}
+.status-pill .dot{width:7px;height:7px;border-radius:50%}
+.dot-green{background:var(--green);box-shadow:0 0 8px var(--green)}
+.dot-amber{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-time{font-size:0.8rem;font-weight:700;color:var(--text)}
+.topbar-date{font-size:0.68rem;color:var(--text-dim)}
+
+/* PAGE SYSTEM */
+.page{display:none;flex:1;overflow-y:auto;padding:24px 28px 40px}
+.page.active{display:block}
+.page::-webkit-scrollbar{width:4px}
+.page::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.2);border-radius:2px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:1.1rem;font-weight:800;color:#fff}
+.page-sub{font-size:0.72rem;color:var(--text-dim);margin-top:3px}
+
+/* CARDS */
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:20px;margin-bottom:14px}
+.card:last-child{margin-bottom:0}
+
+/* COMMAND CENTRE */
+.agents-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px}
+.agent-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s}
+.agent-card:hover{border-color:rgba(201,168,76,0.4);box-shadow:0 4px 24px rgba(201,168,76,0.08)}
+.ac-top{padding:12px 12px 8px}
+.ac-role{font-size:0.56rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:2px}
+.ac-name{font-size:0.85rem;font-weight:800;color:#fff;line-height:1.1}
+.ac-title{font-size:0.62rem;color:var(--text-dim);margin-top:2px}
+.ac-photo{width:100%;aspect-ratio:1/1.05;object-fit:cover;object-position:top;display:block;background:#1a1a1a}
+.ac-bottom{padding:10px 12px 12px}
+.ac-status-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.ac-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.s-active .ac-dot{background:var(--green);box-shadow:0 0 6px var(--green)}
+.s-busy .ac-dot{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.s-offline .ac-dot{background:#444}
+.s-planned .ac-dot{background:#555}
+.ac-status-label{font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+.s-active .ac-status-label{color:var(--green)}
+.s-busy .ac-status-label{color:var(--amber)}
+.s-offline .ac-status-label,.s-planned .ac-status-label{color:#555}
+.ac-desc{font-size:0.6rem;color:var(--text-dim);margin-bottom:8px}
+.ac-metrics{margin-bottom:8px}
+.ac-metric-row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.ac-metric-row:last-child{border-bottom:none}
+.ac-mk{font-size:0.58rem;color:var(--text-dim)}
+.ac-mv{font-size:0.62rem;font-weight:700;color:var(--text)}
+.btn-sm{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);color:var(--gold);border-radius:6px;padding:5px 10px;font-size:0.62rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;width:100%}
+.btn-sm:hover{background:rgba(201,168,76,0.16)}
+
+/* MESSAGES */
+.msg-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text-dim);border-radius:20px;padding:5px 14px;font-size:0.7rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.filter-btn.active,.filter-btn:hover{background:var(--gold-dim);border-color:rgba(201,168,76,0.4);color:var(--gold)}
+.msg-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s}
+.msg-card:hover{border-color:rgba(201,168,76,0.3)}
+.msg-card.unread{border-left:3px solid var(--gold)}
+.msg-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.msg-from{font-size:0.85rem;font-weight:700;color:#fff}
+.msg-time{font-size:0.65rem;color:var(--text-dim)}
+.msg-subject{font-size:0.78rem;color:var(--text);margin-bottom:4px;font-weight:500}
+.msg-preview{font-size:0.7rem;color:var(--text-dim);line-height:1.5}
+.msg-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.tag{font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:10px}
+.tag-urgent{background:rgba(224,80,80,0.2);color:var(--red)}
+.tag-interested{background:rgba(46,204,113,0.2);color:var(--green)}
+.tag-followup{background:rgba(201,168,76,0.2);color:var(--gold)}
+.tag-spam{background:rgba(255,255,255,0.06);color:var(--text-dim)}
+.tag-notnow{background:rgba(74,158,255,0.15);color:var(--blue)}
+.msg-actions{display:flex;gap:8px;margin-top:12px}
+.btn-reply{background:linear-gradient(135deg,#1a4a8a,#2563eb);border:none;color:#fff;border-radius:7px;padding:7px 16px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-reply:hover{background:linear-gradient(135deg,#1e5a9e,#3b82f6)}
+.btn-archive{background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--text-dim);border-radius:7px;padding:7px 12px;font-size:0.72rem;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-archive:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+
+/* TASKS */
+.task-add-row{display:flex;gap:10px;margin-bottom:20px}
+.task-input{flex:1;background:var(--card-bg);border:1px solid var(--card-border);color:var(--text);border-radius:8px;padding:10px 14px;font-size:0.82rem;font-family:inherit;outline:none;transition:border-color 0.15s}
+.task-input:focus{border-color:rgba(201,168,76,0.4)}
+.task-input::placeholder{color:var(--text-dim)}
+.btn-add-task{background:var(--gold);border:none;color:#000;border-radius:8px;padding:10px 20px;font-size:0.78rem;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.15s}
+.btn-add-task:hover{background:var(--gold-bright)}
+.task-section-title{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;margin-top:18px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.task-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;margin-bottom:8px;transition:all 0.15s}
+.task-item.done{opacity:0.45}
+.task-checkbox{width:18px;height:18px;border:2px solid rgba(201,168,76,0.4);border-radius:4px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all 0.15s}
+.task-checkbox.checked{background:var(--gold);border-color:var(--gold)}
+.task-checkbox.checked::after{content:'✓';font-size:10px;color:#000;font-weight:800}
+.task-text{flex:1;font-size:0.8rem;color:var(--text);line-height:1.5}
+.task-item.done .task-text{text-decoration:line-through;color:var(--text-dim)}
+.task-meta{font-size:0.62rem;color:var(--text-dim);margin-top:2px}
+.task-delete{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.8rem;padding:2px 6px;border-radius:4px;transition:all 0.15s;flex-shrink:0}
+.task-delete:hover{color:var(--red);background:rgba(224,80,80,0.1)}
+.task-priority{font-size:0.58rem;font-weight:700;padding:2px 7px;border-radius:8px;margin-top:2px;display:inline-block}
+.pri-high{background:rgba(224,80,80,0.2);color:var(--red)}
+.pri-med{background:rgba(201,168,76,0.2);color:var(--gold)}
+.pri-low{background:rgba(255,255,255,0.06);color:var(--text-dim)}
+
+/* DOCUMENTS */
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.doc-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:18px;transition:border-color 0.2s,box-shadow 0.2s;cursor:pointer}
+.doc-card:hover{border-color:rgba(201,168,76,0.35);box-shadow:0 4px 20px rgba(201,168,76,0.07)}
+.doc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:12px}
+.doc-icon.sop{background:rgba(74,158,255,0.15)}
+.doc-icon.proposal{background:rgba(201,168,76,0.15)}
+.doc-icon.report{background:rgba(46,204,113,0.15)}
+.doc-icon.content{background:rgba(160,100,220,0.15)}
+.doc-name{font-size:0.88rem;font-weight:700;color:#fff;margin-bottom:4px}
+.doc-meta{font-size:0.68rem;color:var(--text-dim);margin-bottom:10px}
+.doc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.doc-actions{display:flex;gap:8px}
+.btn-open{flex:1;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold);border-radius:7px;padding:7px;font-size:0.68rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;text-align:center;text-decoration:none;display:block}
+.btn-open:hover{background:rgba(201,168,76,0.2)}
+
+/* LEADS */
+.leads-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.lead-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:18px;transition:border-color 0.2s}
+.lead-card:hover{border-color:rgba(201,168,76,0.3)}
+.lead-card.approved{border-color:rgba(46,204,113,0.4);opacity:0.6}
+.lead-card.rejected{opacity:0.35}
+.lead-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.lead-company{font-size:1rem;font-weight:800;color:#fff}
+.score-badge{font-size:0.65rem;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.lead-contact{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.lead-contact strong{font-size:0.8rem;color:var(--text)}
+.lead-contact .sep{color:var(--text-dim)}
+.lead-contact .ttxt{font-size:0.75rem;color:var(--text-mid)}
+.dm-badge{background:rgba(74,158,255,0.15);color:var(--blue);font-size:0.58rem;font-weight:700;padding:2px 7px;border-radius:8px}
+.lead-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;font-size:0.68rem;color:var(--text-dim)}
+.lead-reason{font-size:0.75rem;color:var(--text-mid);line-height:1.5;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:7px;padding:10px;margin-bottom:8px}
+.lead-angle{font-size:0.7rem;color:var(--gold);margin-bottom:5px}
+.lead-risk{font-size:0.68rem;color:var(--amber);margin-bottom:10px}
+.lead-actions{display:flex;gap:8px;margin-top:12px}
+.btn-approve{flex:1;background:linear-gradient(135deg,#1a6b30,#16a34a);border:none;color:#fff;border-radius:8px;padding:10px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-approve:hover{background:linear-gradient(135deg,#15803d,#22c55e);transform:translateY(-1px)}
+.btn-approve:disabled{opacity:0.5;cursor:default;transform:none}
+.btn-reject{background:transparent;border:1px solid rgba(224,80,80,0.4);color:var(--red);border-radius:8px;padding:10px 16px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-reject:hover{background:rgba(224,80,80,0.1)}
+
+/* PIPELINE */
+.pipeline-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.pipe-stat{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:20px}
+.pipe-stat-label{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.pipe-stat-value{font-size:2rem;font-weight:800;color:var(--gold);line-height:1}
+.pipe-stat-sub{font-size:0.68rem;color:var(--text-dim);margin-top:6px}
+.pipe-table{width:100%;border-collapse:collapse}
+.pipe-table th{font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)}
+.pipe-table td{font-size:0.78rem;color:var(--text);padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.pipe-table tr:last-child td{border-bottom:none}
+.pipe-table tr:hover td{background:rgba(255,255,255,0.02)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-dim);font-size:0.82rem;line-height:2}
+.empty-state .big{font-size:2rem;display:block;margin-bottom:8px}
+.empty-state span{font-size:0.7rem;color:rgba(255,255,255,0.15);display:block}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#131313;border:1px solid rgba(201,168,76,0.25);border-radius:16px;padding:28px;width:520px;max-width:92vw;max-height:80vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1.2rem;line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal-label{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.modal-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:4px}
+.modal-sub{font-size:0.72rem;color:var(--text-dim);margin-bottom:18px}
+.modal-section{margin-bottom:16px}
+.modal-section-title{font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.modal-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.modal-row:last-child{border-bottom:none}
+.modal-row-key{font-size:0.75rem;color:var(--text-mid)}
+.modal-row-val{font-size:0.75rem;font-weight:700;color:var(--text)}
+.modal-note{font-size:0.72rem;color:var(--text-dim);line-height:1.6;background:rgba(255,255,255,0.03);border-radius:8px;padding:12px}
+.reply-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--text);border-radius:8px;padding:12px;font-size:0.8rem;font-family:inherit;outline:none;resize:vertical;min-height:120px;margin-top:8px}
+.reply-textarea:focus{border-color:rgba(201,168,76,0.4)}
+.btn-send{background:linear-gradient(135deg,#1a4a8a,#2563eb);border:none;color:#fff;border-radius:8px;padding:10px 24px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;transition:all 0.15s}
+.btn-send:hover{background:linear-gradient(135deg,#1e5a9e,#3b82f6)}
+
+/* AGENT CHAT */
+.chat-container{display:flex;flex-direction:column;height:calc(100vh - 160px)}
+.chat-feed{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chat-feed::-webkit-scrollbar{width:4px}
+.chat-feed::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.2);border-radius:2px}
+.chat-msg{display:flex;gap:10px;align-items:flex-start;animation:fadeUp 0.3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg.right{flex-direction:row-reverse}
+.chat-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(201,168,76,0.3)}
+.chat-avatar-placeholder{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1a1200,#2a2000);border:2px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:var(--gold);flex-shrink:0}
+.chat-bubble{max-width:65%;background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:10px 14px}
+.chat-msg.right .chat-bubble{background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2)}
+.chat-agent-name{font-size:0.6rem;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px}
+.chat-text{font-size:0.78rem;color:var(--text);line-height:1.5}
+.chat-time{font-size:0.58rem;color:var(--text-dim);margin-top:4px}
+.chat-input-row{display:flex;gap:10px;padding:16px;border-top:1px solid rgba(201,168,76,0.08);background:var(--sidebar-bg)}
+.chat-input{flex:1;background:var(--card-bg);border:1px solid var(--card-border);color:var(--text);border-radius:8px;padding:10px 14px;font-size:0.8rem;font-family:inherit;outline:none}
+.chat-input:focus{border-color:rgba(201,168,76,0.4)}
+.chat-input::placeholder{color:var(--text-dim)}
+.chat-send{background:var(--gold);border:none;color:#000;border-radius:8px;padding:10px 20px;font-size:0.78rem;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap}
+.chat-send:hover{background:var(--gold-bright)}
+.chat-typing{display:flex;align-items:center;gap:6px;padding:8px 14px;font-size:0.7rem;color:var(--text-dim);font-style:italic}
+.typing-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:blink 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;border:1px solid var(--card-border);border-radius:10px;padding:12px 18px;font-size:0.78rem;font-weight:600;color:var(--text);box-shadow:0 8px 40px rgba(0,0,0,0.7);display:none;z-index:999;max-width:320px;line-height:1.4}
+.toast.show{display:block;animation:slideIn 0.2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon"></div>
+    <div class="logo-name">ActionPointOPS</div>
+    <div class="logo-sub">CEO Command Centre</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" onclick="showPage('command')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Command Centre
+    </div>
+    <div class="nav-item" onclick="showPage('pipeline')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Pipeline
+    </div>
+    <div class="nav-item" onclick="showPage('leads')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Leads
+      <span class="nav-badge" id="leads-badge" style="display:none"></span>
+    </div>
+    <div class="nav-item" onclick="showPage('messages')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Messages
+      <span class="nav-badge" id="msg-badge" style="display:none"></span>
+    </div>
+    <div class="nav-item" onclick="showPage('tasks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Tasks
+      <span class="nav-badge" id="tasks-badge" style="display:none"></span>
+    </div>
+    <div class="nav-item" onclick="showPage('documents')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Documents
+    </div>
+    <div class="nav-item" onclick="showPage('reports')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </div>
+    <div class="nav-item" onclick="showPage('agentchat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Agent Chat
+    </div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="pipeline-widget">
+      <div class="w-label">Pipeline Value</div>
+      <div class="w-value" id="sb-pipeline">$0</div>
+      <div class="w-sub" id="sb-pipeline-sub">No data yet</div>
+    </div>
+    <div class="outreach-widget">
+      <div class="w-label">This Week</div>
+      <div class="ow-row"><span class="ok">Emails Sent</span><span class="ov" id="sb-emails">0</span></div>
+      <div class="ow-row"><span class="ok">Replies</span><span class="ov" id="sb-replies">0</span></div>
+      <div class="ow-row"><span class="ok">Calls Booked</span><span class="ov" id="sb-calls">0</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="topbar-title" id="page-title">Command Centre</div>
+        <div class="topbar-sub" id="last-sync">Connecting to Replit...</div>
+      </div>
+      <div class="status-pill" id="status-pill">
+        <div class="dot dot-amber" id="status-dot"></div>
+        <span id="status-text">Connecting</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div>
+        <div class="topbar-date" id="date-display">—</div>
+        <div class="topbar-time" id="time-display">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: COMMAND CENTRE -->
+  <div class="page active" id="page-command">
+    <div class="agents-grid" id="agents-grid"></div>
+    <div style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-mid)">Recent Activity</div>
+        <button onclick="clearAllActivity()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--text-dim);cursor:pointer;font-size:0.62rem;border-radius:4px;padding:3px 10px;font-family:inherit">Clear All</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px" id="activity-grid">
+        <div style="grid-column:span 5;text-align:center;padding:20px;color:var(--text-dim);font-size:0.75rem">No activity yet — start Replit to see live updates.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: PIPELINE -->
+  <div class="page" id="page-pipeline">
+    <div class="page-header">
+      <div><div class="page-title">Pipeline</div><div class="page-sub">Revenue tracking and deal stages</div></div>
+    </div>
+    <div class="pipeline-grid">
+      <div class="pipe-stat"><div class="pipe-stat-label">Total Pipeline</div><div class="pipe-stat-value" id="p-total">$0</div><div class="pipe-stat-sub">All active deals</div></div>
+      <div class="pipe-stat"><div class="pipe-stat-label">Proposals Sent</div><div class="pipe-stat-value" id="p-proposals" style="color:var(--blue)">0</div><div class="pipe-stat-sub">Awaiting decision</div></div>
+      <div class="pipe-stat"><div class="pipe-stat-label">Calls Booked</div><div class="pipe-stat-value" id="p-calls" style="color:var(--green)">0</div><div class="pipe-stat-sub">Discovery sessions</div></div>
+      <div class="pipe-stat"><div class="pipe-stat-label">Outreach Sent</div><div class="pipe-stat-value" id="p-outreach" style="color:var(--amber)">0</div><div class="pipe-stat-sub">Emails this week</div></div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-mid);margin-bottom:14px">Deal Activity</div>
+      <table class="pipe-table">
+        <thead><tr><th>Stage</th><th>Count</th><th>Value</th><th>Status</th></tr></thead>
+        <tbody id="pipeline-table-body">
+          <tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:24px">No pipeline data yet. Approve leads to start building your pipeline.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAGE: LEADS -->
+  <div class="page" id="page-leads">
+    <div class="page-header">
+      <div><div class="page-title">Leads for Review</div><div class="page-sub" id="leads-sub">Approve to send outreach · Reject to skip</div></div>
+    </div>
+    <div class="leads-grid" id="leads-grid">
+      <div class="empty-state" style="grid-column:span 2"><span class="big">🔍</span>No leads pending review.<br>Upload a Hunter.io CSV to Replit to start vetting.<span>Replit processes the CSV and pushes leads here automatically.</span></div>
+    </div>
+  </div>
+
+  <!-- PAGE: MESSAGES -->
+  <div class="page" id="page-messages">
+    <div class="page-header">
+      <div><div class="page-title">Messages</div><div class="page-sub">Rose's classified inbox — real emails from your Gmail</div></div>
+      <button class="btn-sm" style="width:auto;padding:8px 16px" onclick="fetchMessages()">↻ Refresh</button>
+    </div>
+    <div class="msg-filters">
+      <button class="filter-btn active" onclick="filterMsgs('all',this)">All</button>
+      <button class="filter-btn" onclick="filterMsgs('urgent',this)">🚨 Urgent</button>
+      <button class="filter-btn" onclick="filterMsgs('interested',this)">✅ Interested</button>
+      <button class="filter-btn" onclick="filterMsgs('follow_up',this)">🔄 Follow-up</button>
+      <button class="filter-btn" onclick="filterMsgs('not_now',this)">⏸ Not Now</button>
+      <button class="filter-btn" onclick="filterMsgs('spam',this)">🗑 Spam</button>
+    </div>
+    <div id="messages-list">
+      <div class="empty-state"><span class="big">📭</span>No messages yet.<br>Rose will classify your emails when Replit is running.<span>Make sure Rose is active in main.py</span></div>
+    </div>
+  </div>
+
+  <!-- PAGE: TASKS -->
+  <div class="page" id="page-tasks">
+    <div class="page-header">
+      <div><div class="page-title">Tasks</div><div class="page-sub">Your to-do list — saved in your browser</div></div>
+    </div>
+    <div class="task-add-row">
+      <input class="task-input" id="task-input" placeholder="Add a task... (press Enter or click Add)" onkeydown="if(event.key==='Enter')addTask()">
+      <select id="task-priority" style="background:var(--card-bg);border:1px solid var(--card-border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:0.78rem;font-family:inherit;outline:none">
+        <option value="high">🔴 High</option>
+        <option value="med" selected>🟡 Medium</option>
+        <option value="low">⚪ Low</option>
+      </select>
+      <button class="btn-add-task" onclick="addTask()">+ Add</button>
+    </div>
+    <div id="tasks-active-section">
+      <div class="task-section-title">Active Tasks</div>
+      <div id="tasks-active"></div>
+    </div>
+    <div id="tasks-done-section" style="display:none">
+      <div class="task-section-title" style="cursor:pointer" onclick="toggleDone()">Completed ▾</div>
+      <div id="tasks-done"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: DOCUMENTS -->
+  <div class="page" id="page-documents">
+    <div class="page-header">
+      <div><div class="page-title">Documents</div><div class="page-sub">Agent-generated files — SOPs, proposals, reports, content</div></div>
+      <button class="btn-sm" style="width:auto;padding:8px 16px" onclick="fetchDocuments()">↻ Refresh</button>
+    </div>
+    <div class="docs-grid" id="docs-grid">
+      <div class="empty-state" style="grid-column:span 3"><span class="big">📁</span>No documents yet.<br>James (SOP Builder) and Elena (Analyst) will generate files here.<span>Files appear here when agents complete their work in Replit.</span></div>
+    </div>
+  </div>
+
+  <!-- PAGE: AGENT CHAT -->
+  <div class="page" id="page-agentchat">
+    <div class="page-header">
+      <div><div class="page-title">Agent Chat</div><div class="page-sub">Watch your agents talk — or ask them something yourself</div></div>
+      <button class="btn-sm" style="width:auto;padding:8px 16px" onclick="startAgentDiscussion()">⚡ Start Discussion</button>
+    </div>
+    <div class="chat-container">
+      <div class="chat-feed" id="chat-feed"></div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" placeholder="Ask your agents something... e.g. 'Rose, what replies came in today?'" onkeydown="if(event.key==='Enter')sendChatMessage()">
+        <button class="chat-send" onclick="sendChatMessage()">Send →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: REPORTS -->
+  <div class="page" id="page-reports">
+    <div class="page-header">
+      <div><div class="page-title">Reports</div><div class="page-sub">Pinpoint Diagnostic Reports from Elena</div></div>
+    </div>
+    <div id="reports-list">
+      <div class="empty-state"><span class="big">📊</span>No reports yet.<br>Elena builds Pinpoint Diagnostic Reports after discovery calls.<span>Complete a discovery call to trigger your first report.</span></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /wrapper -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-body"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────
+const GIST_URL  = 'https://gist.githubusercontent.com/Sonofanarchy2024/29415de74f9e62e6400a467f0bec26e8/raw/actionpointops_status.json';
+const API_BASE  = 'https://547af235-2eb4-44b0-924c-d645791f8b92-00-36bh5yl7w5nqj.spock.replit.dev'; // UPDATE if your Replit URL differs
+
+// ── AGENTS ──────────────────────────────────────────────────────
+const AGENTS = [
+  { key:'marketing', label:'Marketing',   name:'Marcus Hale',  title:'Head of Outreach',     photo:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80', metrics:[{id:'m_emails_sent',lbl:'📧 Emails Sent'},{id:'m_replies',lbl:'↩ Replies'},{id:'m_meetings',lbl:'📅 Meetings'}], about:'Sends cold outreach to approved leads via info@actionpointops.com. Runs every cycle.'},
+  { key:'discovery', label:'Discovery',   name:'Diana Patel',  title:'Lead Qualification',   photo:'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&q=80', metrics:[{id:'d_new_leads',lbl:'🔍 New Leads'},{id:'d_qualified',lbl:'✅ Qualified'},{id:'d_priority',lbl:'⚠ High Priority'}], about:'Processes inbound leads from website intake form and Hunter.io CSV uploads.'},
+  { key:'analyst',   label:'Analyst',     name:'Elena Cruz',   title:'Lead Analyst',         photo:'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&q=80', metrics:[{id:'a_in_progress',lbl:'📊 In Progress'},{id:'a_completed',lbl:'📋 Completed'},{id:'a_review',lbl:'🕐 Awaiting Review'}], about:'Builds Pinpoint Diagnostic Reports after discovery calls. Status: Planned.'},
+  { key:'sop',       label:'SOP Builder', name:'James Walker', title:'Operations Architect',  photo:'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&q=80', metrics:[{id:'s_in_progress',lbl:'📄 In Progress'},{id:'s_review',lbl:'🔍 In Review'},{id:'s_completed',lbl:'✅ Completed'}], about:'Generates proposals and SOP packages for clients. Status: Planned.'},
+  { key:'rose',      label:'Rose',        name:'Rose Bennett', title:'Inbox Gatekeeper',      photo:'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&q=80', metrics:[{id:'r_unread',lbl:'📬 Unread'},{id:'r_urgent',lbl:'🚨 Urgent'},{id:'r_followups',lbl:'🔄 Follow-ups'}], about:'Monitors chantaldozil@gmail.com. Classifies: Interested / Urgent / Not Now / Spam. Running at batch 163+.'},
+  { key:'mindy',     label:'Mindy',       name:'Mindy Chen',   title:'Content Director',      photo:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80', metrics:[{id:'mi_posts',lbl:'📝 Posts'},{id:'mi_emails',lbl:'✉ Emails'},{id:'mi_scripts',lbl:'🎬 Scripts'}], about:'Content engine. Fires every Monday 8am. Generates LinkedIn posts, TikTok scripts, and outreach emails.'},
+];
+
+// ── STATE ────────────────────────────────────────────────────────
+let liveData = { agents_online:[], agents_planned:[], pipeline:{}, agent_metrics:{}, alerts:[], review_queue:[], messages:[], documents:[], last_updated:null };
+let allMessages = [];
+let currentMsgFilter = 'all';
+let tasks = JSON.parse(localStorage.getItem('apo_tasks') || '[]');
+
+// ── CLOCK ────────────────────────────────────────────────────────
+function updateClock() {
+  const n = new Date();
+  document.getElementById('date-display').textContent = n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  document.getElementById('time-display').textContent = n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+updateClock(); setInterval(updateClock, 10000);
+
+// ── TOAST ────────────────────────────────────────────────────────
+function showToast(msg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = color || 'rgba(201,168,76,0.3)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── NAV ──────────────────────────────────────────────────────────
+const PAGE_TITLES = { command:'Command Centre', pipeline:'Pipeline', leads:'Leads', messages:'Messages', tasks:'Tasks', documents:'Documents', reports:'Reports', agentchat:'Agent Chat' };
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[id] || id;
+  if (id==='messages') fetchMessages();
+  if (id==='documents') fetchDocuments();
+  if (id==='tasks') renderTasks();
+  if (id==='leads') renderLeads();
+  if (id==='pipeline') renderPipeline();
+  if (id==='agentchat') initAgentChat();
+}
+
+// ── MODAL ────────────────────────────────────────────────────────
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+function openModal(html) { document.getElementById('modal-body').innerHTML = html; document.getElementById('modal-overlay').classList.add('show'); }
+
+// ── AGENTS ──────────────────────────────────────────────────────
+function agentStatus(key) {
+  if ((liveData.agents_online||[]).includes(key)) return {cls:'s-active', label:'Online'};
+  if ((liveData.agents_planned||[]).includes(key)) return {cls:'s-planned', label:'Planned'};
+  return {cls:'s-offline', label:'Offline'};
+}
+function metricVal(id) { return (liveData.agent_metrics||{})[id] ?? 0; }
+
+function renderAgents() {
+  document.getElementById('agents-grid').innerHTML = AGENTS.map(a => {
+    const st = agentStatus(a.key);
+    const metrics = a.metrics.map(m=>`<div class="ac-metric-row"><span class="ac-mk">${m.lbl}</span><span class="ac-mv">${metricVal(m.id)}</span></div>`).join('');
+    return `<div class="agent-card" onclick="openAgentModal('${a.key}')">
+      <div class="ac-top"><div class="ac-role">${a.label}</div><div class="ac-name">${a.name}</div><div class="ac-title">${a.title}</div></div>
+      <img class="ac-photo" src="${a.photo}" alt="${a.name}" onerror="this.style.background='#1a1a1a'">
+      <div class="ac-bottom">
+        <div class="ac-status-row ${st.cls}"><div class="ac-dot"></div><span class="ac-status-label">${st.label}</span></div>
+        <div class="ac-desc">${st.label==='Online'?'Running':'Not running'}</div>
+        <div class="ac-metrics">${metrics}</div>
+        <button class="btn-sm">View Details</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAgentModal(key) {
+  const a = AGENTS.find(x=>x.key===key);
+  const st = agentStatus(key);
+  const metrics = a.metrics.map(m=>`<div class="modal-row"><span class="modal-row-key">${m.lbl}</span><span class="modal-row-val">${metricVal(m.id)}</span></div>`).join('');
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-label">${a.label}</div>
+    <div class="modal-title">${a.name}</div>
+    <div class="modal-sub">${a.title}</div>
+    <div class="modal-section">
+      <div class="modal-section-title">Status</div>
+      <div class="modal-row"><span class="modal-row-key">Current</span><span class="modal-row-val">${st.label}</span></div>
+      <div class="modal-row"><span class="modal-row-key">Last data</span><span class="modal-row-val">${liveData.last_updated||'Never'}</span></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">Metrics</div>${metrics}
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">About</div>
+      <div class="modal-note">${a.about}</div>
+    </div>`);
+}
+
+let dismissedActivity = new Set();
+function dismissActivity(idx) { dismissedActivity.add(idx); renderActivity(liveData.alerts||[]); }
+function clearAllActivity() { (liveData.alerts||[]).forEach((_,i)=>dismissedActivity.add(i)); renderActivity(liveData.alerts||[]); fetch(API_BASE+'/api/clear-alerts',{method:'POST'}).catch(()=>{}); }
+
+function renderActivity(items) {
+  const grid = document.getElementById('activity-grid');
+  if (!items||items.length===0) { grid.innerHTML='<div style="grid-column:span 5;text-align:center;padding:20px;color:var(--text-dim);font-size:0.75rem">No activity yet.</div>'; return; }
+  const visible = items.map((it,i)=>({...it,_idx:i})).filter(it=>!dismissedActivity.has(it._idx));
+  if (visible.length===0) { grid.innerHTML='<div style="grid-column:span 5;text-align:center;padding:20px;color:var(--text-dim);font-size:0.75rem">All cleared.</div>'; return; }
+  const colors = {gold:'gold',green:'green',blue:'blue',red:'red',purple:'purple'};
+  grid.innerHTML = visible.slice(0,5).map(it=>`
+    <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;position:relative">
+      <button onclick="dismissActivity(${it._idx})" style="position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.7rem;padding:2px 5px" title="Dismiss">✕</button>
+      <div style="width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;background:rgba(201,168,76,0.15)" class="activity-icon ${colors[it.dot||it.color]||'gold'}">${it.icon||'📋'}</div>
+      <div style="font-size:0.7rem;color:var(--text);line-height:1.4;font-weight:500;padding-right:16px">${it.message||''}</div>
+      <div style="font-size:0.62rem;color:var(--text-dim)">${it.time||''}</div>
+    </div>`).join('');
+}
+
+// ── MESSAGES ────────────────────────────────────────────────────
+async function fetchMessages() {
+  document.getElementById('messages-list').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim);font-size:0.8rem">Loading messages from Rose...</div>';
+  try {
+    const r = await fetch(API_BASE + '/api/messages?_=' + Date.now());
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    allMessages = Array.isArray(data) ? data : (data.messages || []);
+    renderMessages();
+    const unread = allMessages.filter(m=>!m.read&&m.classification!=='spam').length;
+    const badge = document.getElementById('msg-badge');
+    if (unread>0) { badge.textContent=unread; badge.style.display=''; } else { badge.style.display='none'; }
+  } catch(e) {
+    // Try Gist fallback
+    if (liveData.messages && liveData.messages.length > 0) {
+      allMessages = liveData.messages;
+      renderMessages();
+    } else {
+      document.getElementById('messages-list').innerHTML = `
+        <div class="empty-state"><span class="big">📭</span>
+        Replit is offline or Rose hasn't run yet.<br>
+        <span>Rose reads your Gmail and pushes classified messages here when Replit is running.</span>
+        <div style="margin-top:16px;font-size:0.72rem;color:var(--amber)">Error: ${e.message}</div></div>`;
+    }
+  }
+}
+
+function filterMsgs(filter, btn) {
+  currentMsgFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMessages();
+}
+
+function renderMessages() {
+  const list = document.getElementById('messages-list');
+  let msgs = allMessages;
+  if (currentMsgFilter !== 'all') msgs = msgs.filter(m => (m.classification||'').toLowerCase().replace(/ /,'_') === currentMsgFilter);
+  if (msgs.length === 0) {
+    list.innerHTML = `<div class="empty-state"><span class="big">📭</span>No ${currentMsgFilter==='all'?'':''+currentMsgFilter+' '}messages.</div>`;
+    return;
+  }
+  const tagMap = { urgent:'tag-urgent', interested:'tag-interested', follow_up:'tag-followup', 'follow up':'tag-followup', spam:'tag-spam', not_now:'tag-notnow', 'not now':'tag-notnow' };
+  list.innerHTML = msgs.map((m,i) => {
+    const cls = m.classification ? m.classification.toLowerCase().replace(/ /,'_') : '';
+    const tagCls = tagMap[cls] || 'tag-followup';
+    return `<div class="msg-card ${!m.read&&cls!=='spam'?'unread':''}" id="msg-card-${i}" style="position:relative">
+      <button onclick="event.stopPropagation();deleteMessage(${i},'${(m.id||'').replace(/'/g,"\\'")}','${(m.gmail_uid||'').replace(/'/g,"\\'")}');" style="position:absolute;top:10px;right:10px;background:rgba(224,80,80,0.1);border:1px solid rgba(224,80,80,0.2);color:var(--red);cursor:pointer;font-size:0.62rem;border-radius:4px;padding:3px 8px;font-family:inherit">🗑 Delete</button>
+      <div onclick="openMessageModal(${i})">
+        <div class="msg-top"><div class="msg-from">${m.sender_name||m.from||'Unknown'}</div><div class="msg-time" style="margin-right:70px">${m.date||m.time||''}</div></div>
+        <div class="msg-subject">${m.subject||'(no subject)'}</div>
+        <div class="msg-preview">${(m.preview||m.body||'').substring(0,120)}${(m.preview||m.body||'').length>120?'...':''}</div>
+        <div class="msg-tags">
+          ${m.classification?`<span class="tag ${tagCls}">${m.classification.toUpperCase()}</span>`:''}
+          ${m.company?`<span class="tag" style="background:rgba(74,158,255,0.12);color:var(--blue)">${m.company}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openMessageModal(idx) {
+  const m = allMessages[idx];
+  if (!m) return;
+  const cls = (m.classification||'').toLowerCase().replace(/ /,'_');
+  const tagMap = { urgent:'tag-urgent', interested:'tag-interested', follow_up:'tag-followup', spam:'tag-spam', not_now:'tag-notnow' };
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-label">Message</div>
+    <div class="modal-title">${m.subject||'(no subject)'}</div>
+    <div class="modal-sub">From: ${m.sender_name||m.from||'?'} · ${m.date||m.time||''}</div>
+    ${m.classification?`<div style="margin-bottom:14px"><span class="tag ${tagMap[cls]||'tag-followup'}" style="font-size:0.7rem">${m.classification.toUpperCase()}</span></div>`:''}
+    <div class="modal-section">
+      <div class="modal-section-title">Message</div>
+      <div class="modal-note" style="white-space:pre-wrap;max-height:220px;overflow-y:auto">${m.body||m.preview||'No body available.'}</div>
+    </div>
+    ${m.rose_note?`<div class="modal-section"><div class="modal-section-title">Rose's Note</div><div class="modal-note" style="color:var(--gold)">${m.rose_note}</div></div>`:''}
+    <div class="modal-section">
+      <div class="modal-section-title">Reply</div>
+      <textarea class="reply-textarea" id="reply-body" placeholder="Write your reply..."></textarea>
+      <button class="btn-send" onclick="sendReply('${(m.from||'').replace(/'/g,"\\'")}','${(m.subject||'').replace(/'/g,"\\'")}')">Send Reply</button>
+    </div>`);
+}
+
+async function deleteMessage(idx, msgId, gmailUid) {
+  const card = document.getElementById('msg-card-'+idx);
+  if (card) { card.style.transition='all 0.3s'; card.style.opacity='0'; card.style.height='0'; card.style.padding='0'; card.style.margin='0'; setTimeout(()=>card.remove(),300); }
+  allMessages = allMessages.filter((_,i)=>i!==idx);
+  try { await fetch(API_BASE+'/api/delete-message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:msgId,gmail_uid:gmailUid})}); } catch(e){}
+  showToast('Message deleted.','rgba(46,204,113,0.4)');
+}
+
+async function sendReply(to, subject) {
+  const body = document.getElementById('reply-body').value.trim();
+  if (!body) { showToast('Write a reply first.', 'rgba(224,80,80,0.5)'); return; }
+  try {
+    const r = await fetch(API_BASE + '/api/send-reply', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ to, subject: 'Re: '+subject, body })
+    });
+    const d = await r.json();
+    if (d.ok) { showToast('Reply sent via info@actionpointops.com ✓', 'rgba(46,204,113,0.5)'); closeModal(); }
+    else showToast('Error: '+(d.error||'unknown'), 'rgba(224,80,80,0.5)');
+  } catch(e) { showToast('Replit offline — reply not sent.', 'rgba(240,160,48,0.5)'); }
+}
+
+// ── TASKS ────────────────────────────────────────────────────────
+function saveTasks() { localStorage.setItem('apo_tasks', JSON.stringify(tasks)); }
+
+function addTask() {
+  const input = document.getElementById('task-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const priority = document.getElementById('task-priority').value;
+  tasks.unshift({ id: Date.now(), text, priority, done: false, created: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}) });
+  saveTasks(); renderTasks();
+  input.value = '';
+  updateTasksBadge();
+}
+
+function toggleTask(id) {
+  const t = tasks.find(x=>x.id===id);
+  if (t) { t.done = !t.done; saveTasks(); renderTasks(); updateTasksBadge(); }
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(x=>x.id!==id);
+  saveTasks(); renderTasks(); updateTasksBadge();
+}
+
+function updateTasksBadge() {
+  const active = tasks.filter(t=>!t.done).length;
+  const badge = document.getElementById('tasks-badge');
+  if (active>0) { badge.textContent=active; badge.style.display=''; } else { badge.style.display='none'; }
+}
+
+function toggleDone() {
+  const el = document.getElementById('tasks-done');
+  el.style.display = el.style.display==='none' ? 'block' : 'none';
+}
+
+const PRI_MAP = { high:{cls:'pri-high',label:'High'}, med:{cls:'pri-med',label:'Medium'}, low:{cls:'pri-low',label:'Low'} };
+
+function renderTasks() {
+  const active = tasks.filter(t=>!t.done);
+  const done   = tasks.filter(t=>t.done);
+  const makeCard = t => `
+    <div class="task-item ${t.done?'done':''}" id="task-${t.id}">
+      <div class="task-checkbox ${t.done?'checked':''}" onclick="toggleTask(${t.id})"></div>
+      <div style="flex:1">
+        <div class="task-text">${t.text}</div>
+        <div class="task-meta">
+          <span class="task-priority ${(PRI_MAP[t.priority]||PRI_MAP.med).cls}">${(PRI_MAP[t.priority]||PRI_MAP.med).label}</span>
+          <span style="margin-left:8px">Added ${t.created||''}</span>
+        </div>
+      </div>
+      <button class="task-delete" onclick="deleteTask(${t.id})">✕</button>
+    </div>`;
+  document.getElementById('tasks-active').innerHTML = active.length ? active.map(makeCard).join('') : '<div style="color:var(--text-dim);font-size:0.78rem;padding:16px;text-align:center">No active tasks. Add one above!</div>';
+  document.getElementById('tasks-done').innerHTML = done.map(makeCard).join('');
+  document.getElementById('tasks-done-section').style.display = done.length ? 'block' : 'none';
+  updateTasksBadge();
+}
+
+// ── DOCUMENTS ───────────────────────────────────────────────────
+async function fetchDocuments() {
+  try {
+    const r = await fetch(API_BASE + '/api/documents?_=' + Date.now());
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    const docs = await r.json();
+    renderDocuments(Array.isArray(docs) ? docs : (docs.documents||[]));
+  } catch(e) {
+    if (liveData.documents && liveData.documents.length > 0) { renderDocuments(liveData.documents); }
+    else {
+      document.getElementById('docs-grid').innerHTML = `
+        <div class="empty-state" style="grid-column:span 3"><span class="big">📁</span>
+        No documents yet.<br>James and Elena will generate files here.<span>Error: ${e.message}</span></div>`;
+    }
+  }
+}
+
+function renderDocuments(docs) {
+  const grid = document.getElementById('docs-grid');
+  if (!docs||docs.length===0) { grid.innerHTML='<div class="empty-state" style="grid-column:span 3"><span class="big">📁</span>No documents yet.<br>James and Elena will generate files here.</div>'; return; }
+  const iconMap = { sop:'📋', proposal:'📄', report:'📊', content:'✍️', diagnostic:'🔬' };
+  const typeMap = { sop:'sop', proposal:'proposal', report:'report', content:'content', diagnostic:'report' };
+  grid.innerHTML = docs.map(d => `
+    <div class="doc-card">
+      <div class="doc-icon ${typeMap[d.type]||'sop'}">${iconMap[d.type]||'📄'}</div>
+      <div class="doc-name">${d.name||d.title||'Untitled'}</div>
+      <div class="doc-meta">${d.created||d.date||''} · ${d.type||'Document'} · ${d.agent||''}</div>
+      <div class="doc-tags">
+        ${d.client?`<span class="tag tag-interested">${d.client}</span>`:''}
+        ${d.status?`<span class="tag tag-followup">${d.status}</span>`:''}
+      </div>
+      <div class="doc-actions">
+        <a class="btn-open" href="${d.url||d.download_url||'#'}" target="_blank" ${!d.url&&!d.download_url?'onclick="showToast(\'File not available yet\');return false"':''}>Open →</a>
+      </div>
+    </div>`).join('');
+}
+
+// ── LEADS ────────────────────────────────────────────────────────
+function renderLeads() {
+  const queue = liveData.review_queue || [];
+  const pending = queue.filter(l=>l.status==='pending_approval');
+  const badge = document.getElementById('leads-badge');
+  if (pending.length>0) { badge.textContent=pending.length; badge.style.display=''; } else { badge.style.display='none'; }
+  document.getElementById('leads-sub').textContent = pending.length > 0 ? `${pending.length} leads waiting for your approval` : 'No leads pending — approve leads to trigger outreach';
+  const grid = document.getElementById('leads-grid');
+  if (pending.length===0) { grid.innerHTML='<div class="empty-state" style="grid-column:span 2"><span class="big">🔍</span>No leads pending review.<br>Upload a Hunter.io CSV to Replit to start vetting.<span>Replit processes the CSV and pushes scored leads here automatically.</span></div>'; return; }
+  const scColor = s => s>=7?'#22c55e':s>=5?'#f0a030':'#e05050';
+  const scLabel = s => s>=7?'Strong Fit':s>=5?'Marginal':'Weak Fit';
+  grid.innerHTML = pending.map(lead => `
+    <div class="lead-card" id="lcard-${lead.id}">
+      <div class="lead-header">
+        <div class="lead-company">${lead.company||''}</div>
+        <div class="score-badge" style="background:${scColor(lead.fit_score||0)};color:#000">${lead.fit_score||0}/10 — ${scLabel(lead.fit_score||0)}</div>
+      </div>
+      <div class="lead-contact">
+        <strong>${lead.contact_name||''}</strong>
+        ${lead.contact_title?`<span class="sep">·</span><span class="ttxt">${lead.contact_title}</span>`:''}
+        ${lead.decision_maker?'<span class="dm-badge">Decision Maker</span>':''}
+      </div>
+      <div class="lead-meta">
+        <span>${lead.contact_email||''}</span>
+        ${lead.industry?`<span>· ${lead.industry}</span>`:''}
+        ${lead.employee_count?`<span>· ${lead.employee_count} employees</span>`:''}
+        ${lead.location?`<span>· ${lead.location}</span>`:''}
+      </div>
+      <div class="lead-reason">${lead.fit_reason||''}</div>
+      ${lead.recommended_angle?`<div class="lead-angle">Angle: <strong>${lead.recommended_angle}</strong></div>`:''}
+      ${lead.risk_flag&&lead.risk_flag!=='null'?`<div class="lead-risk">⚠ ${lead.risk_flag}</div>`:''}
+      <div class="lead-actions">
+        <button class="btn-approve" onclick="approveLead('${(lead.id||'').replace(/'/g,"\\'")}','${(lead.company||'').replace(/'/g,"\\'")}')">✓ Approve — Send Outreach</button>
+        <button class="btn-reject" onclick="rejectLead('${(lead.id||'').replace(/'/g,"\\'")}','${(lead.company||'').replace(/'/g,"\\'")}')">✕ Reject</button>
+      </div>
+    </div>`).join('');
+}
+
+async function approveLead(id, company) {
+  const card = document.getElementById('lcard-'+id);
+  const btn = card.querySelector('.btn-approve');
+  btn.disabled=true; btn.textContent='Approving...';
+  try {
+    const r = await fetch(API_BASE+'/api/approve-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+    const d = await r.json();
+    if (d.ok) { card.classList.add('approved'); card.querySelector('.lead-actions').innerHTML="<strong style='color:#22c55e;font-size:0.8rem'>✓ Approved — outreach queued</strong>"; showToast('✓ '+company+' approved. Marcus will reach out.',  'rgba(46,204,113,0.5)'); }
+    else { btn.disabled=false; btn.textContent='✓ Approve — Send Outreach'; showToast('Error: '+(d.error||''), 'rgba(224,80,80,0.5)'); }
+  } catch(e) { btn.disabled=false; btn.textContent='✓ Approve — Send Outreach'; showToast('Replit offline — approval not saved.', 'rgba(240,160,48,0.5)'); }
+}
+
+async function rejectLead(id, company) {
+  const card = document.getElementById('lcard-'+id);
+  card.classList.add('rejected');
+  card.querySelector('.lead-actions').innerHTML="<span style='color:var(--red);font-size:0.8rem'>✕ Rejected</span>";
+  try { await fetch(API_BASE+'/api/reject-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}); } catch(e){}
+  showToast('✕ '+company+' rejected.', 'rgba(224,80,80,0.5)');
+  setTimeout(()=>{ card.style.transition='all 0.3s'; card.style.opacity='0'; card.style.height='0'; card.style.padding='0'; card.style.margin='0'; setTimeout(()=>card.remove(),350); },1500);
+}
+
+// ── PIPELINE ─────────────────────────────────────────────────────
+function renderPipeline() {
+  const p = liveData.pipeline || {};
+  document.getElementById('p-total').textContent    = '$'+Number(p.revenue_pipeline||0).toLocaleString();
+  document.getElementById('p-proposals').textContent = p.proposals_sent||0;
+  document.getElementById('p-calls').textContent     = p.calls_booked||0;
+  document.getElementById('p-outreach').textContent  = p.outreach_sent||0;
+  const tbody = document.getElementById('pipeline-table-body');
+  const stages = [
+    { stage:'Outreach Sent',       count:p.outreach_sent||0,      value:'—',        status:'Marcus running' },
+    { stage:'Replies Received',    count:p.replies_received||0,   value:'—',        status:'Rose monitoring' },
+    { stage:'Discovery Calls',     count:p.discovery_completions||0, value:'—',     status:'Diana qualifying' },
+    { stage:'Proposals Sent',      count:p.proposals_sent||0,     value:'$'+(p.revenue_pipeline||0).toLocaleString(), status:'Awaiting decision' },
+  ];
+  tbody.innerHTML = stages.some(s=>s.count>0) ? stages.map(s=>`<tr><td>${s.stage}</td><td>${s.count}</td><td>${s.value}</td><td style="color:var(--text-dim)">${s.status}</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--text-dim);padding:24px">No pipeline data yet. Approve leads to start building your pipeline.</td></tr>';
+}
+
+// ── GIST FETCH ───────────────────────────────────────────────────
+async function fetchGist() {
+  try {
+    const r = await fetch(GIST_URL + '?_=' + Date.now());
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    if (Array.isArray(d.agents_online))  liveData.agents_online  = d.agents_online;
+    if (Array.isArray(d.agents_planned)) liveData.agents_planned = d.agents_planned;
+    if (d.pipeline)      liveData.pipeline      = d.pipeline;
+    if (d.agent_metrics) liveData.agent_metrics = d.agent_metrics;
+    if (d.alerts)        liveData.alerts        = d.alerts;
+    if (d.review_queue)  liveData.review_queue  = d.review_queue;
+    if (d.messages)      liveData.messages      = d.messages;
+    if (d.documents)     liveData.documents     = d.documents;
+    if (d.last_updated)  liveData.last_updated  = d.last_updated;
+
+    // Sidebar
+    const p = liveData.pipeline;
+    document.getElementById('sb-pipeline').textContent  = '$'+Number(p.revenue_pipeline||0).toLocaleString();
+    document.getElementById('sb-pipeline-sub').textContent = (p.outreach_sent||0)+' emails sent';
+    document.getElementById('sb-emails').textContent   = p.outreach_sent||0;
+    document.getElementById('sb-replies').textContent  = p.replies_received||0;
+    document.getElementById('sb-calls').textContent    = p.calls_booked||0;
+
+    // Status
+    const recent = isRecent(d.last_updated);
+    const dot  = document.getElementById('status-dot');
+    const stxt = document.getElementById('status-text');
+    const sync = document.getElementById('last-sync');
+    if (recent) {
+      dot.className='dot dot-green'; stxt.textContent='Live'; sync.textContent='Last sync: '+(d.last_updated||'');
+    } else {
+      dot.className='dot dot-amber'; stxt.textContent='Replit Offline'; sync.textContent='Last known data: '+(d.last_updated||'Never');
+    }
+
+    // Leads badge
+    const pending = (liveData.review_queue||[]).filter(l=>l.status==='pending_approval').length;
+    const lb = document.getElementById('leads-badge');
+    if (pending>0) { lb.textContent=pending; lb.style.display=''; } else { lb.style.display='none'; }
+
+    renderAgents();
+    if (liveData.alerts&&liveData.alerts.length>0) renderActivity(liveData.alerts);
+
+  } catch(e) {
+    document.getElementById('status-dot').className='dot dot-amber';
+    document.getElementById('status-text').textContent='Offline';
+    document.getElementById('last-sync').textContent='Cannot reach data source';
+    renderAgents();
+  }
+}
+
+function isRecent(ts) {
+  if (!ts) return false;
+  try { return (Date.now()-new Date(ts).getTime())/60000 < 30; } catch(e) { return false; }
+}
+
+// ── AGENT CHAT ────────────────────────────────────────────────
+const AGENT_PERSONAS = {
+  marcus:  { name:'Marcus Hale',  role:'Marketing',   photo:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80',  color:'#4a9eff' },
+  diana:   { name:'Diana Patel',  role:'Discovery',   photo:'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&q=80', color:'#2ecc71' },
+  elena:   { name:'Elena Cruz',   role:'Analyst',     photo:'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&q=80', color:'#c9a84c' },
+  rose:    { name:'Rose Bennett', role:'Inbox',        photo:'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&q=80', color:'#e05050' },
+  mindy:   { name:'Mindy Chen',   role:'Content',     photo:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80', color:'#a064dc' },
+  chantal: { name:'Chantal',      role:'CEO',         photo:null, color:'#f0c040' },
+};
+
+let chatHistory = [];
+
+function addChatBubble(agentKey, text, isRight=false) {
+  const agent = AGENT_PERSONAS[agentKey] || AGENT_PERSONAS.marcus;
+  const feed = document.getElementById('chat-feed');
+  const time = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const avatarHtml = agent.photo
+    ? `<img class="chat-avatar" src="${agent.photo}" alt="${agent.name}">`
+    : `<div class="chat-avatar-placeholder">${agent.name.charAt(0)}</div>`;
+  const div = document.createElement('div');
+  div.className = `chat-msg${isRight?' right':''}`;
+  div.innerHTML = `
+    ${avatarHtml}
+    <div class="chat-bubble">
+      <div class="chat-agent-name" style="color:${agent.color}">${agent.name} · ${agent.role}</div>
+      <div class="chat-text">${text}</div>
+      <div class="chat-time">${time}</div>
+    </div>`;
+  feed.appendChild(div);
+  feed.scrollTop = feed.scrollHeight;
+  chatHistory.push({role:'assistant', content:`${agent.name}: ${text}`});
+}
+
+function showTyping(agentKey) {
+  const agent = AGENT_PERSONAS[agentKey] || AGENT_PERSONAS.marcus;
+  const feed = document.getElementById('chat-feed');
+  const div = document.createElement('div');
+  div.className = 'chat-msg';
+  div.id = 'typing-indicator';
+  const avatarHtml = agent.photo
+    ? `<img class="chat-avatar" src="${agent.photo}" alt="${agent.name}">`
+    : `<div class="chat-avatar-placeholder">${agent.name.charAt(0)}</div>`;
+  div.innerHTML = `${avatarHtml}<div class="chat-typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div><span style="margin-left:4px">${agent.name} is typing...</span></div>`;
+  feed.appendChild(div);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+async function callAgentAPI(agentKey, userMessage) {
+  const agent = AGENT_PERSONAS[agentKey];
+  const p = liveData.pipeline || {};
+  const systemContext = `You are ${agent.name}, the ${agent.role} agent for ActionPointOPS, a business operations consulting firm founded by Chantal Dozil.
+
+Current system status:
+- Emails sent this week: ${p.outreach_sent||0}
+- Replies received: ${p.replies_received||0}
+- Calls booked: ${p.calls_booked||0}
+- Pipeline value: $${p.revenue_pipeline||0}
+- Agents online: ${(liveData.agents_online||[]).join(', ')||'unknown'}
+
+Your personality and role:
+${agentKey==='marcus'?'You are Marcus, head of outreach. Confident, direct, sales-focused. You track every email sent and reply received. You care about conversion rates and getting meetings booked.':''}
+${agentKey==='rose'?'You are Rose, inbox gatekeeper. Precise, observant, protective of Chantal\'s time. You classify emails and flag what matters. You notice patterns in who responds and who doesn\'t.':''}
+${agentKey==='diana'?'You are Diana, lead qualification specialist. Analytical, methodical. You score leads and identify the best opportunities. You ask the right questions to qualify prospects.':''}
+${agentKey==='elena'?'You are Elena, the analyst. Data-driven, thorough, detail-oriented. You build diagnostic reports and find root causes. You speak in insights and patterns.':''}
+${agentKey==='mindy'?'You are Mindy, content director. Creative, trend-aware, brand-conscious. You generate LinkedIn posts, TikTok scripts, and outreach copy. You know what goes viral.':''}
+
+Keep responses SHORT — 2-4 sentences max. Conversational, in character. Speak directly to Chantal or to other agents. Be specific about what you know from the system data.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemContext,
+        messages: [
+          ...chatHistory.slice(-6).map(m=>({role:'user',content:m.content})),
+          { role: 'user', content: userMessage }
+        ]
+      })
+    });
+    const data = await response.json();
+    return data.content?.[0]?.text || "I'm processing that...";
+  } catch(e) {
+    return "Connection issue — I'll be back online shortly.";
+  }
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  // Show user message
+  addChatBubble('chantal', msg, true);
+  chatHistory.push({role:'user', content:`Chantal: ${msg}`});
+
+  // Figure out which agent to respond
+  const lower = msg.toLowerCase();
+  let respondingAgent = 'marcus';
+  if (lower.includes('rose') || lower.includes('email') || lower.includes('inbox') || lower.includes('message')) respondingAgent = 'rose';
+  else if (lower.includes('diana') || lower.includes('lead') || lower.includes('qualify')) respondingAgent = 'diana';
+  else if (lower.includes('elena') || lower.includes('analys') || lower.includes('report') || lower.includes('diagnostic')) respondingAgent = 'elena';
+  else if (lower.includes('mindy') || lower.includes('content') || lower.includes('post') || lower.includes('tiktok') || lower.includes('linkedin')) respondingAgent = 'mindy';
+  else if (lower.includes('marcus') || lower.includes('outreach') || lower.includes('sent') || lower.includes('reply')) respondingAgent = 'marcus';
+
+  showTyping(respondingAgent);
+  const reply = await callAgentAPI(respondingAgent, msg);
+  removeTyping();
+  addChatBubble(respondingAgent, reply);
+
+  // Sometimes trigger a second agent to chime in
+  if (Math.random() > 0.5) {
+    const others = ['marcus','rose','diana','elena','mindy'].filter(a=>a!==respondingAgent);
+    const second = others[Math.floor(Math.random()*others.length)];
+    setTimeout(async () => {
+      showTyping(second);
+      const reply2 = await callAgentAPI(second, `${AGENT_PERSONAS[respondingAgent].name} just said: "${reply}" — add your perspective briefly.`);
+      removeTyping();
+      addChatBubble(second, reply2);
+    }, 1500);
+  }
+}
+
+async function startAgentDiscussion() {
+  const feed = document.getElementById('chat-feed');
+  feed.innerHTML = '';
+  chatHistory = [];
+  const p = liveData.pipeline || {};
+  const topic = `It's a new day at ActionPointOPS. We sent ${p.outreach_sent||42} outreach emails this week. Replies: ${p.replies_received||0}. Pipeline: $${p.revenue_pipeline||14000}. Each of you give a quick status update and flag anything Chantal needs to know right now. Keep it brief and direct.`;
+
+  const agents = ['marcus','rose','diana','mindy'];
+  for (const agent of agents) {
+    await new Promise(r=>setTimeout(r, 800));
+    showTyping(agent);
+    await new Promise(r=>setTimeout(r, 1200));
+    const reply = await callAgentAPI(agent, topic);
+    removeTyping();
+    addChatBubble(agent, reply);
+  }
+}
+
+// Auto-start chat when page loads
+function initAgentChat() {
+  const feed = document.getElementById('chat-feed');
+  if (feed && feed.children.length === 0) {
+    addChatBubble('marcus', "Good morning. Outreach is queued and ready. Ask me anything or hit 'Start Discussion' for a full team briefing.");
+  }
+}
+renderAgents();
+renderTasks();
+fetchGist();
+setInterval(fetchGist, 30000);
+</script>
+</body>
+</html>
